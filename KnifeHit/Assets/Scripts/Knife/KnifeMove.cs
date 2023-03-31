@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst.CompilerServices;
 using UnityEngine;
 
 public class KnifeMove : ThanhMonoBehaviour
@@ -46,7 +47,8 @@ public class KnifeMove : ThanhMonoBehaviour
         if (isFlying == true)
         {
             transform.parent.Translate(directionFly * speedFly * Time.fixedDeltaTime);
-        }    
+        }
+      
     }
    
     private void Update()
@@ -66,11 +68,14 @@ public class KnifeMove : ThanhMonoBehaviour
     }
     private void RotateKnife()
     {
-        if (this.targetPos.y >= transform.parent.position.y) return;
+        if (this.targetPos.y <= transform.parent.position.y) return;
+      
+     
         Vector3 diff = this.targetPos - transform.parent.position;
         diff.Normalize();
         float rot_z = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
-        this.transform.parent.rotation =  Quaternion.Euler(0f, 0f, rot_z + 90);
+        this.transform.parent.rotation =  Quaternion.Euler(0f, 0f, rot_z-90);
+
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
