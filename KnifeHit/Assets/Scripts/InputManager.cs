@@ -8,8 +8,8 @@ public class InputManager : ThanhMonoBehaviour
     public static InputManager Instance { get => instance; }
     [SerializeField] protected Vector3 mouseWorldPos;
     public Vector3 MouseWorldPos { get => mouseWorldPos; }
-    [SerializeField] protected bool onFiring;
-    public bool OnFiring { get => onFiring; }
+    //[SerializeField] protected bool onFiring;
+    //public bool OnFiring { get => onFiring; }
     // Start is called before the first frame update
     protected override void Awake()
     {
@@ -31,13 +31,14 @@ public class InputManager : ThanhMonoBehaviour
     {
         mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
     }
+   
     //public virtual void GetMouseDown()
     //{
     //    if(Input.GetMouseButtonDown(0))
     //    {
     //        this.onFiring = true;
     //    }    
-       
+
     //}
 
 }

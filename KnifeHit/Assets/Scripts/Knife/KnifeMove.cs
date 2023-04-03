@@ -12,8 +12,13 @@ public class KnifeMove : ThanhMonoBehaviour
     [SerializeField] protected bool isFlying = false;
     [SerializeField] protected Rigidbody2D knifeRb;
     [SerializeField] protected BoxCollider2D knifeColl;
+    [SerializeField] protected KnifeCtrl knifeCtrl;
+    public KnifeCtrl KnifeCtrl { get => knifeCtrl; }
     protected Vector3 lastVelocity;
     protected Vector3 posBeforeFly;
+    KnifeShootLine knifeLine;
+    public bool isMouseDown = false;
+    protected int countColl = 0;
     protected override void Awake()
     {
         base.Awake();
@@ -24,6 +29,13 @@ public class KnifeMove : ThanhMonoBehaviour
         base.LoadComponent();
         this.LoadKnifeRb();
         this.LoadKnifeCollider();
+        this.LoadKnifeCtrl(); 
+    }
+
+    private void LoadKnifeCtrl()
+    {
+        if (this.knifeCtrl != null) return;
+        this.knifeCtrl = this.transform.parent.GetComponent<KnifeCtrl>();
     }
 
     private void LoadKnifeRb()
@@ -40,13 +52,19 @@ public class KnifeMove : ThanhMonoBehaviour
     {
         if (isFlying == false )
         {
-            this.GetTargetPos();
-            this.RotateKnife();
+            if(isMouseDown)
+            {
+                this.GetTargetPos();
+                this.RotateKnife();
+            }    
+            
+           
         }
      
         if (isFlying == true)
         {
             transform.parent.Translate(directionFly * speedFly * Time.fixedDeltaTime);
+            this.knifeCtrl.KnifeShootLine.line.gameObject.SetActive(false);
         }
       
     }
@@ -58,6 +76,10 @@ public class KnifeMove : ThanhMonoBehaviour
             
             isFlying = true;
         }
+        if(Input.GetAxis("Fire1") == 1)
+        {
+            isMouseDown = true;
+        }    
        
     }
 
@@ -79,12 +101,25 @@ public class KnifeMove : ThanhMonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Vector3 diff = transform.position - this.posBeforeFly;
-        var direction = Vector3.Reflect(diff.normalized, collision.contacts[0].normal);
-        float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        this.transform.parent.rotation = Quaternion.Euler(0f, 0f, rot_z-90);
-        Debug.Log(diff.normalized);
-        this.posBeforeFly = transform.position;
+        countColl++;
+        if(countColl<4)
+        {
+            Vector3 diff = transform.position - this.posBeforeFly;
+            var direction = Vector3.Reflect(diff.normalized, collision.contacts[0].normal);
+            float rot_z = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            this.transform.parent.rotation = Quaternion.Euler(0f, 0f, rot_z - 90);
+            Debug.Log(diff.normalized);
+            this.posBeforeFly = transform.position;
+        }else
+        {
+            Invoke("ResetKnife", 2);
+        }    
+      
+        
+    }
+    private void ResetKnife()
+    {
+        Destroy(this.transform.parent.gameObject);
     }
 
 }
